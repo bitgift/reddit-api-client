@@ -150,7 +150,10 @@ class Link extends Entity
      */
     public function getTitle()
     {
-        return $this['title'];
+         if(isset($this['title']))
+              return $this['title'];  
+         else
+              return NULL;
     }
 
     /**
@@ -395,4 +398,20 @@ class Link extends Entity
     {
         return isset($this['clicked']) ? $this['clicked'] : false;
     }
+
+	/**
+	 * Returns the parent id
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function getParent()
+	{
+		return $this['parent_id'];
+	}
+
+	public function get($type)
+	{
+		return $this[$type];
+	}
 }

@@ -311,6 +311,8 @@ class Reddit
         return $subreddits;
     }
 
+
+
     /**
      * Posts a comment in reply to a link or comment
      *
@@ -575,4 +577,131 @@ class Reddit
 
         return true;
     }
+
+	public function friend($username,$container)
+	{
+		if (!$this->isLoggedIn()) {
+			$message = 'Cannot submit links without being logged in';
+			$code = RedditException::LOGIN_REQUIRED;
+			throw new RedditException($message, $code);
+		}
+
+		$verb = 'POST';
+		$url = 'http://www.reddit.com/api/friend';
+		$data = array(
+					'api_type' => 'json',
+					'container' => $container,
+					'name' => $username,
+					'note' => 'test note',
+					//'permissions' => '',
+					'type' => 'friend',
+					'uh' => $this->modHash,
+		);
+		$response = $this->sendRequest($verb, $url, $data);
+
+		if (!is_array($response) || !isset($response['jquery']))
+		{
+			return false;
+		}
+
+		return $response;
+	}
+
+	public function unfriend($username,$container)
+	{
+		if (!$this->isLoggedIn()) {
+			$message = 'Cannot submit links without being logged in';
+			$code = RedditException::LOGIN_REQUIRED;
+			throw new RedditException($message, $code);
+		}
+
+		$verb = 'POST';
+		$url = 'http://www.reddit.com/api/unfriend';
+		$data = array(
+					'container' => $container,
+				     //'id' => '',
+					'name' => $username,
+					'type' => 'friend',
+					'uh' => $this->modHash,
+		);
+
+		$response = $this->sendRequest($verb, $url, $data);
+
+		if (!is_array($response) || !isset($response['jquery']))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public function getme()
+	{
+		if (!$this->isLoggedIn()) {
+			$message = 'Cannot submit links without being logged in';
+			$code = RedditException::LOGIN_REQUIRED;
+			throw new RedditException($message, $code);
+		}
+
+		$verb = 'GET';
+		$url = 'http://www.reddit.com/api/me.json';
+		$response = $this->sendRequest($verb, $url);
+
+		return $response;
+	}
+
+	public function getmessages($length = 100)
+	{
+		if (!$this->isLoggedIn()) {
+			$message = 'Cannot submit links without being logged in';
+			$code = RedditException::LOGIN_REQUIRED;
+			throw new RedditException($message, $code);
+		}
+
+		$verb = 'GET';
+		$url = 'http://www.reddit.com/message/inbox.json?limit='.$length;
+
+		$response = $this->sendRequest($verb, $url);
+		return $response;
+	}
+
+	public function sendmessage($msg,$subject,$recipient)
+	{
+		if (!$this->isLoggedIn()) {
+			$message = 'Cannot submit links without being logged in';
+			$code = RedditException::LOGIN_REQUIRED;
+			throw new RedditException($message, $code);
+		}
+
+		/*$verb = 'POST';
+		$url = 'http://www.reddit.com/api/new_captcha';
+		$data = array(
+					'api_type' => 		'json'
+		);
+
+		$response = $this->sendRequest($verb, $url, $data);
+
+		print_r($response); die(); */
+
+		$verb = 'POST';
+		$url = 'http://www.reddit.com/api/compose';
+		$data = array(
+					'api_type' => 		'json',
+				//	'captcha' => 		'',
+				//	'iden' => 		'',
+					'subject' => 		$subject,
+					'text' =>			$msg,
+					'to' =>			$recipient,
+					'uh' => 			$this->modHash,
+		);
+
+		$response = $this->sendRequest($verb, $url, $data);
+
+		if (!is_array($response) || !isset($response['jquery']))
+		{
+			return false;
+		}
+
+		return true;
+	}
 }

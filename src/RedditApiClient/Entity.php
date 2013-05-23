@@ -136,4 +136,12 @@ abstract class Entity implements ArrayAccess
     {
         return isset($this['created_utc']) ? $this['created_utc'] : null;
     }
+    
+    public function getBody()
+    {
+         if(isset($this['body']))
+          return $this['body'];
+         else
+          return NULL;
+    }
 }
